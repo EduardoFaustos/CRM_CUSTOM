@@ -31,7 +31,7 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
             </div>
             <div>
               <p class="text-sm text-gray-500">Ciudad, Provincia CP</p>
-              <p class="text-lg text-gray-900">{{ customer.city }}, {{ customer.state }} {{ customer.zipCode }}</p>
+              <p class="text-lg text-gray-900">{{ customer.city }}, {{ customer.state }} {{ customer.zip_code }}</p>
             </div>
           </div>
 

@@ -12,7 +12,7 @@ export interface Customer {
   address: string;
   city: string;
   state: string;
-  zipCode: string;
+  zip_code: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,7 +26,7 @@ export interface CreateCustomerRequest {
   address: string;
   city: string;
   state: string;
-  zipCode: string;
+  zip_code: string;
 }
 
 @Injectable({

@@ -130,4 +130,4 @@
 ---
 
 **Actualizado:** 1 de Abril de 2026  
-**Por:** Sistema de Actualización Automática
+**Por:** Eduardo Faustos
