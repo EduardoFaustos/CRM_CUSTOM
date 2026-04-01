@@ -19,11 +19,29 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="bg-white rounded-lg shadow overflow-hidden p-6">
         <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700">Cliente</label>
-          <select formControlName="customerId" class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2">
-            <option value="">Seleccionar cliente</option>
-            <option *ngFor="let customer of customers" [value]="customer.cedula">{{ customer.name }}</option>
-          </select>
+          <label class="block text-sm font-medium text-gray-700">Cliente *</label>
+          <div class="relative">
+            <input 
+              type="text" 
+              [(ngModel)]="customerSearchQuery"
+              [ngModelOptions]="{standalone: true}"
+              (input)="onCustomerSearch($event)"
+              placeholder="Buscar por cédula o nombre..." 
+              class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            
+            <div *ngIf="customerSearchQuery && filteredCustomers.length > 0" class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg">
+              <div *ngFor="let customer of filteredCustomers" 
+                (click)="selectCustomer(customer)"
+                class="px-3 py-2 hover:bg-blue-50 cursor-pointer border-b border-gray-100">
+                <div class="font-medium text-gray-900">{{ customer.name }}</div>
+                <div class="text-sm text-gray-500">Cédula: {{ customer.cedula }}</div>
+              </div>
+            </div>
+
+            <div *ngIf="selectedCustomer" class="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
+              <p class="text-sm"><strong>Seleccionado:</strong> {{ selectedCustomer.name }} ({{ selectedCustomer.cedula }})</p>
+            </div>
+          </div>
         </div>
 
         <div class="mb-6">
@@ -71,6 +89,9 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 export class OrderFormComponent implements OnInit {
   form!: FormGroup;
   customers: Customer[] = [];
+  filteredCustomers: Customer[] = [];
+  selectedCustomer: Customer | null = null;
+  customerSearchQuery: string = '';
   isEditMode = false;
   isLoading = false;
   alert: any = null;
@@ -132,11 +153,38 @@ export class OrderFormComponent implements OnInit {
     );
   }
 
+  onCustomerSearch(event: any) {
+    const query = this.customerSearchQuery.toLowerCase();
+    if (!query) {
+      this.filteredCustomers = [];
+      return;
+    }
+    
+    this.filteredCustomers = this.customers.filter(customer =>
+      customer.name.toLowerCase().includes(query) ||
+      customer.cedula.toLowerCase().includes(query)
+    );
+  }
+
+  selectCustomer(customer: Customer) {
+    this.selectedCustomer = customer;
+    this.form.patchValue({ customerId: customer.cedula });
+    this.customerSearchQuery = '';
+    this.filteredCustomers = [];
+  }
+
   loadOrder(id: string) {
     this.isLoading = true;
     this.orderService.getOrderById(id).subscribe(
       (order) => {
         this.form.patchValue({ customerId: order.customerId });
+        
+        // Buscar y establecer el cliente seleccionado
+        const customer = this.customers.find(c => c.cedula === order.customerId);
+        if (customer) {
+          this.selectedCustomer = customer;
+        }
+        
         const itemsArray = this.getItems();
         itemsArray.clear();
         order.items.forEach(item => {

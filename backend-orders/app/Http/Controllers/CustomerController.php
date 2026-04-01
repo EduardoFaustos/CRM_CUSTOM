@@ -21,6 +21,12 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->filled('zipCode') && !$request->filled('zip_code')) {
+            $request->merge([
+                'zip_code' => $request->input('zipCode'),
+            ]);
+        }
+
         // Validación básica de estructura
         $basicValidation = $request->validate([
             'cedula' => 'required|string|size:10',
@@ -117,6 +123,12 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
+        if ($request->filled('zipCode') && !$request->filled('zip_code')) {
+            $request->merge([
+                'zip_code' => $request->input('zipCode'),
+            ]);
+        }
+
         $validated = $request->validate([
             'tipo_documento' => 'sometimes|in:Cedula,Ruc,Pasaporte',
             'name' => 'sometimes|string|max:255',

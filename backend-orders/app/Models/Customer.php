@@ -3,11 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Customer extends Model
 {
+    protected $primaryKey = 'cedula';
+
+    public $incrementing = false;
+
+    protected $keyType = 'string';
+
     protected $fillable = [
+        'cedula',
+        'tipo_documento',
         'name',
         'email',
         'phone',
