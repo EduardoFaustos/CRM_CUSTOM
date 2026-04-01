@@ -23,7 +23,7 @@ cd backend-orders && php artisan serve
 
 # Acceder a la aplicación
 # Frontend: http://localhost:3000 (o :4200 si npm start)
-# Auth Swagger: http://localhost:5000/swagger
+# Auth Swagger: http://localhost:5005/swagger
 ```
 
 ---
@@ -167,7 +167,7 @@ docker exec -it crm-orders /bin/bash
 
 ## 🔗 Puntos Finales de API
 
-### Servicio Autenticación (Puerto 5000/5001)
+### Servicio Autenticación (Puerto 5005/5001)
 
 ```
 POST   /api/auth/register
@@ -327,7 +327,7 @@ GO
 ### Frontend (`frontend/.env`)
 
 ```bash
-VITE_API_AUTH_URL=http://localhost:5000
+VITE_API_AUTH_URL=http://localhost:5005
 VITE_API_ORDERS_URL=http://localhost:8001
 ```
 
@@ -410,8 +410,8 @@ dd(DB::getQueryLog());
 
 | Entorno | Frontend | Auth API | Orders API |
 |---------|----------|----------|-----------|
-| Local | http://localhost:3000 | http://localhost:5000 | http://localhost:8001 |
-| Docker | http://localhost:3000 | http://crm-auth:5000 | http://crm-orders:8001 |
+| Local | http://localhost:3000 | http://localhost:5005 | http://localhost:8001 |
+| Docker | http://localhost:3000 | http://crm-auth:5005 | http://crm-orders:8001 |
 | Preparación | https://staging.crm.local | https://auth.staging.crm.local | https://api.staging.crm.local |
 | Producción | https://crm.company.com | https://auth.crm.company.com | https://api.crm.company.com |
 
@@ -517,7 +517,7 @@ curl -X PATCH http://localhost:8001/api/orders/1/status \
 ### Registrar Nuevo Usuario
 
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST http://localhost:5005/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "email": "newuser@example.com",
@@ -529,7 +529,7 @@ curl -X POST http://localhost:5000/api/auth/register \
 ### Iniciar Sesión y Obtener Token
 
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:5005/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "email": "user@example.com",
@@ -553,7 +553,7 @@ curl -X POST http://localhost:5000/api/auth/login \
 TOKEN="eyJhbGciOiJIUzI1NiIs..."
 
 # Usar en llamadas de API
-curl -X GET http://localhost:5000/api/auth/verify \
+curl -X GET http://localhost:5005/api/auth/verify \
   -H "Authorization: Bearer $TOKEN"
 ```
 

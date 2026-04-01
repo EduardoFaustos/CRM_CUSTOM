@@ -13,7 +13,7 @@ Antes de comenzar, verifica que tengas instalado lo siguiente:
 - [ ] Docker Compose instalado (incluido con Docker Desktop)
 - [ ] 4 GB de RAM disponibles
 - [ ] 5 GB de espacio en disco disponible
-- [ ] Puertos 4200, 5000, 5001, 1433 disponibles
+- [ ] Puertos 4200, 5005, 5001, 1433 disponibles
 
 ### Opción B: Configuración Manual (Más Control)
 - [ ] Node.js 18+ instalado
@@ -55,7 +55,7 @@ docker-compose ps
 
 # Deberías ver 4 contenedores corriendo:
 # - crm-frontend (Puerto 4200)
-# - crm-auth (Puerto 5000-5001)
+# - crm-auth (Puerto 5005-5001)
 # - crm-orders (Puerto 5001)
 # - crm-db (SQL Server, Puerto 1433)
 ```
@@ -64,7 +64,7 @@ docker-compose ps
 
 Abre tu navegador y visita:
 - **Frontend:** http://localhost:4200
-- **Swagger (API Auth):** http://localhost:5000/swagger
+- **Swagger (API Auth):** http://localhost:5005/swagger
 - **Orders API:** http://localhost:5001
 
 ### Paso 5: Primer Inicio de Sesión
@@ -128,7 +128,7 @@ dotnet ef database update
 # Iniciar servidor
 dotnet run
 
-# Debería iniciar en http://localhost:5000
+# Debería iniciar en http://localhost:5005
 ```
 
 ### Paso 4: Configurar Backend Pedidos (Terminal 3)
@@ -156,7 +156,7 @@ php artisan serve --port=5001
 ### Paso 5: Acceder a la Aplicación
 
 - **Frontend:** http://localhost:4200
-- **Auth Swagger:** http://localhost:5000/swagger
+- **Auth Swagger:** http://localhost:5005/swagger
 - **Orders API:** http://localhost:8000 (o :5001 si especificaste)
 
 ### Paso 6: Primer Inicio de Sesión
@@ -190,7 +190,7 @@ http://localhost:4200
 ### 2. Verificar Servicio de Autenticación
 ```bash
 # Opción 1: Navegador
-http://localhost:5000/swagger
+http://localhost:5005/swagger
 
 # Deberías ver:
 ✅ Interfaz Swagger
@@ -198,7 +198,7 @@ http://localhost:5000/swagger
 ✅ Botón "Try it out" funcional
 
 # Opción 2: cURL
-curl http://localhost:5000/api/auth/verify
+curl http://localhost:5005/api/auth/verify
 # Retorna 401 (unauthorized) = correcto
 ```
 
@@ -300,7 +300,7 @@ docker-compose up -d
 ### Que no puedo iniciar sesión
 ```bash
 # Verificar backend responde
-curl http://localhost:5000/api/auth/verify
+curl http://localhost:5005/api/auth/verify
 
 # Si no responde:
 docker-compose logs -f crm-auth

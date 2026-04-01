@@ -107,7 +107,7 @@ echo ===========================================================================
 echo.
 echo ACCESO A LA APLICACION:
 echo   Frontend (Angular):     http://localhost:3000
-echo   Auth API:               http://localhost:5000/api
+echo   Auth API:               http://localhost:5005/api
 echo   Orders API:             http://localhost:8001/api
 echo.
 echo CREDENCIALES DE PRUEBA:

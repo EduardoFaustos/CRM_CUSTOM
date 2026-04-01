@@ -131,7 +131,7 @@ function Show-Status {
     
     Write-Host "ACCESO:" -ForegroundColor Yellow
     Write-Host "  Frontend (Angular):     http://localhost:3000" -ForegroundColor Green
-    Write-Host "  Auth API:               http://localhost:5000/api" -ForegroundColor Green
+    Write-Host "  Auth API:               http://localhost:5005/api" -ForegroundColor Green
     Write-Host "  Orders API:             http://localhost:8001/api" -ForegroundColor Green
     Write-Host ""
     

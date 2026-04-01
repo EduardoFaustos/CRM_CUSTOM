@@ -11,7 +11,7 @@
 - Docker Desktop instalado
 - 4-6 GB de RAM disponibles
 - 10 GB de espacio en disco
-- Puertos libres: 3000, 5000, 5001, 8001, 1433
+- Puertos libres: 3000, 5005, 5001, 8001, 1433
 
 ---
 
@@ -96,7 +96,7 @@ docker-compose ps
 # Deberías ver algo como:
 # NAME                COMMAND              STATUS          PORTS
 # sqlserver           mssql-server        Up 2 minutes     0.0.0.0:1433->1433/tcp
-# auth-service        dotnet run          Up 1 minute      0.0.0.0:5000->5000/tcp, 0.0.0.0:5001->5001/tcp
+# auth-service        dotnet run          Up 1 minute      0.0.0.0:5005->5005/tcp, 0.0.0.0:5001->5001/tcp
 # orders-service      php artisan serve   Up 1 minute      0.0.0.0:8001->8001/tcp
 # frontend            npm start           Up 1 minute      0.0.0.0:3000->3000/tcp
 ```
@@ -122,7 +122,7 @@ Deberías ver la **aplicación CRM cargada** ✅
 | Servicio | URL | Propósito |
 |----------|-----|-----------|
 | **Frontend** | http://localhost:3000 | Aplicación web principal |
-| **Auth API** | http://localhost:5000/api | API de autenticación |
+| **Auth API** | http://localhost:5005/api | API de autenticación |
 | **Orders API** | http://localhost:8001/api | API de pedidos |
 | **SQL Server** | localhost:1433 | Base de datos |
 
@@ -294,7 +294,7 @@ $body = @{
     password = "password123"
 } | ConvertTo-Json
 
-Invoke-RestMethod -Uri "http://localhost:5000/api/auth/login" `
+Invoke-RestMethod -Uri "http://localhost:5005/api/auth/login" `
     -Method POST `
     -Headers @{"Content-Type"="application/json"} `
     -Body $body
@@ -375,7 +375,7 @@ Ejecuta esta lista para verificar que todo funciona:
 - [ ] Docker Desktop está abierto
 - [ ] `docker ps` muestra 4 contenedores en ejecución
 - [ ] Frontend carga en http://localhost:3000
-- [ ] Se puede acceder a http://localhost:5000/api (Auth API)
+- [ ] Se puede acceder a http://localhost:5005/api (Auth API)
 - [ ] Se puede acceder a http://localhost:8001/api (Orders API)
 - [ ] Puedes loguear con admin@example.com / password123
 - [ ] No hay errores en la consola del navegador (F12)
@@ -387,7 +387,7 @@ Ejecuta esta lista para verificar que todo funciona:
 | Componente | Puerto | URL | Usuario | Contraseña |
 |-----------|--------|-----|---------|-----------|
 | Frontend (Angular) | 3000 | http://localhost:3000 | admin@example.com | password123 |
-| Auth API | 5000 | http://localhost:5000/api | - | - |
+| Auth API | 5005 | http://localhost:5005/api | - | - |
 | Orders API | 8001 | http://localhost:8001/api | - | - |
 | HTTPS (Auth) | 5001 | https://localhost:5001/api | - | - |
 | SQL Server | 1433 | localhost,1433 | sa | YourPassword123! |

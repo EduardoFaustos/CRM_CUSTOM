@@ -26,7 +26,7 @@ Visión general de la arquitectura, componentes, y flujos de datos del Sistema C
                     │                  │
               ┌─────┴──────────┬───────┴─────────┐
               │                │                 │
-          Port 5000        Port 5001             │
+          Port 5005        Port 5001             │
               │                │                 │
     ┌─────────▼────────┐  ┌────▼──────────┐    │
     │  Servicio Auth   │  │ Servicio      │    │

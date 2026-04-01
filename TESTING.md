@@ -181,17 +181,17 @@ Prueba el viaje completo del usuario:
 **Pruebas de API (Postman/Insomnia)**
 1. Importar: `postman-collection.json`
 2. Establecer variables de entorno:
-   - `base_url=http://localhost:5000`
+   - `base_url=http://localhost:5005`
    - `token=<jwt_token>`
    - `customer_id=<id>`
 
 **Pruebas de Carga**
 ```bash
 # Usar Apache Bench
-ab -n 100 -c 10 http://localhost:5000/api/auth/verify
+ab -n 100 -c 10 http://localhost:5005/api/auth/verify
 
 # Usar wrk
-wrk -t12 -c400 -d30s http://localhost:5000/api/auth/verify
+wrk -t12 -c400 -d30s http://localhost:5005/api/auth/verify
 ```
 
 ---

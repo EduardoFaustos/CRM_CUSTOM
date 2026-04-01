@@ -43,7 +43,7 @@ cd backend-orders && php artisan serve
 
 ### Acceder a la Aplicación
 - **Frontend:** http://localhost:3000
-- **API Autenticación:** http://localhost:5000/swagger
+- **API Autenticación:** http://localhost:5005/swagger
 - **API Pedidos:** http://localhost:8001
 
 ### Primer Inicio de Sesión

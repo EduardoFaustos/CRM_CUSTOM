@@ -16,8 +16,8 @@ ps aux | grep dotnet  # servicio .NET
 ps aux | grep php      # servicio PHP
 
 # Verificar disponibilidad de puerto
-netstat -ano | findstr "5000"  # Windows
-lsof -i :5000  # Mac/Linux
+netstat -ano | findstr "5005"  # Windows
+lsof -i :5005  # Mac/Linux
 
 # Verificar variables de entorno
 cat frontend/src/environments/environment.ts
@@ -446,7 +446,7 @@ gzip on;
 
 # Setup HTTPS Docker Compose:
 environment:
-  - ASPNETCORE_URLS=https://+:5001;http://+:5000
+  - ASPNETCORE_URLS=https://+:5001;http://+:5005
   - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cert.pfx
 ```
 
@@ -487,7 +487,7 @@ dotnet run  # .NET (salida de consola)
 
 # 3. Probar conectividad
 # Frontend → Backend
-curl http://localhost:5000/api/auth/verify
+curl http://localhost:5005/api/auth/verify
 curl http://localhost:8001/api/customers
 
 # 4. Verificar base de datos

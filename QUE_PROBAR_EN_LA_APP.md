@@ -4,7 +4,7 @@
 
 ---
 
-http://localhost:5000/swagger/index.html y:
+http://localhost:5005/swagger/index.html y:
 
 Ve a POST /api/auth/register
 Haz clic en "Try it out"

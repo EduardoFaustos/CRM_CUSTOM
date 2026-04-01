@@ -42,7 +42,7 @@ MSSQL_SA_PASSWORD=YourSecurePassword123!
 FRONTEND_PORT=4200
 
 # Backend Autenticación
-AUTH_SERVICE_PORT=5000
+AUTH_SERVICE_PORT=5005
 AUTH_DB_CONNECTION=Server=mssql;Database=CRMAuthDb;User Id=sa;Password=YourSecurePassword123!;
 
 # Backend Órdenes
@@ -79,7 +79,7 @@ docker-compose logs -f mssql
 curl http://localhost:4200
 
 # Backend Auth
-curl http://localhost:5000/api/auth/health
+curl http://localhost:5005/api/auth/health
 
 # Backend Órdenes
 curl http://localhost:5001/api/orders/health
@@ -160,7 +160,7 @@ server {
     
     # Backend Auth
     location /api/auth/ {
-        proxy_pass http://localhost:5000/api/;
+        proxy_pass http://localhost:5005/api/;
         proxy_set_header Authorization $http_authorization;
     }
     

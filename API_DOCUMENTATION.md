@@ -28,7 +28,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ---
 
-## 🔑 Endpoints de Autenticación (Base: `http://localhost:5000`)
+## 🔑 Endpoints de Autenticación (Base: `http://localhost:5005`)
 
 ### Registro de Usuario
 
@@ -790,7 +790,7 @@ Authorization: Bearer <jwt_token>
 
 ```bash
 # Iniciar sesión
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST http://localhost:5005/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","password":"PassWord123!"}'
 
