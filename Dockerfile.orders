@@ -1,8 +1,8 @@
-FROM php:8.3-fpm
+FROM php:8.3-apache
 
 WORKDIR /app
 
-# Install system dependencies, build tools and Nginx
+# Install system dependencies, build tools
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -18,7 +18,6 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     autoconf \
     automake \
-    nginx \
     supervisor \
     && rm -rf /var/lib/apt/lists/*
 
@@ -33,7 +32,14 @@ RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor |
 # Install PHP extensions including SQL Server support
 RUN pecl install sqlsrv pdo_sqlsrv && \
     docker-php-ext-enable sqlsrv pdo_sqlsrv && \
-    rm -rf /var/lib/apt/lists/*
+    docker-php-ext-install pdo_mysql && \
+    rm -rf /var/lib/apt/lists*
+
+# Enable Apache modules needed for Laravel
+RUN a2enmod rewrite && \
+    a2enmod headers && \
+    a2enmod env && \
+    a2enmod setenvif
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -50,64 +56,37 @@ COPY backend-orders/ .
 # Ensure storage and bootstrap directories exist with write permissions
 RUN mkdir -p storage/{logs,app,framework/{cache/data,views,sessions}} bootstrap/cache && \
     chmod -R 777 storage bootstrap/cache && \
-    chown -R www-data:www-data storage bootstrap/cache || true
+    chown -R www-data:www-data storage bootstrap/cache . || true
 
 # Run composer scripts now that code is available
 RUN composer run-script post-autoload-dump || true
 
-# Create Nginx configuration
-RUN echo 'server {\
-    listen 8001;\
-    server_name _;\
-    root /app/public;\
-    index index.php index.html;\
-    client_max_body_size 100M;\
-    add_header '"'"'Access-Control-Allow-Origin'"'"' '"'"'*'"'"' always;\
-    add_header '"'"'Access-Control-Allow-Methods'"'"' '"'"'GET, POST, PUT, DELETE, PATCH, OPTIONS'"'"' always;\
-    add_header '"'"'Access-Control-Allow-Headers'"'"' '"'"'Content-Type, Authorization'"'"' always;\
-    if ($request_method = '"'"'OPTIONS'"'"') {\
-        return 204;\
-    }\
-    location / {\
-        try_files $uri $uri/ /index.php?$query_string;\
-    }\
-    location ~ \\.php$ {\
-        fastcgi_pass unix:/var/run/php-fpm.sock;\
-        fastcgi_index index.php;\
-        include fastcgi_params;\
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\
-    }\
-}' > /etc/nginx/sites-available/default && \
-    rm -f /etc/nginx/sites-enabled/default && \
-    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default && \
-    mkdir -p /run/nginx
+# Create Apache configuration
+COPY backend-orders/apache.conf /etc/apache2/sites-available/000-default.conf
 
-# Create supervisor configuration for both PHP-FPM and Nginx
+# Set DocumentRoot to Laravel public directory
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /app/public|g' /etc/apache2/sites-available/000-default.conf
+
+# Set up supervisor to manage Apache
 RUN mkdir -p /var/log/supervisor && \
     echo '[supervisord]' > /etc/supervisor/conf.d/services.conf && \
     echo 'nodaemon=true' >> /etc/supervisor/conf.d/services.conf && \
     echo 'logfile=/var/log/supervisor/supervisord.log' >> /etc/supervisor/conf.d/services.conf && \
     echo 'pidfile=/var/run/supervisord.pid' >> /etc/supervisor/conf.d/services.conf && \
     echo '' >> /etc/supervisor/conf.d/services.conf && \
-    echo '[program:php-fpm]' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'command=/usr/local/sbin/php-fpm -F' >> /etc/supervisor/conf.d/services.conf && \
+    echo '[program:apache2]' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'command=/bin/bash -c "source /etc/apache2/envvars && exec /usr/sbin/apache2 -D FOREGROUND"' >> /etc/supervisor/conf.d/services.conf && \
     echo 'autostart=true' >> /etc/supervisor/conf.d/services.conf && \
     echo 'autorestart=true' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'stderr_logfile=/var/log/php-fpm.err.log' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'stdout_logfile=/var/log/php-fpm.out.log' >> /etc/supervisor/conf.d/services.conf && \
-    echo '' >> /etc/supervisor/conf.d/services.conf && \
-    echo '[program:nginx]' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'command=/usr/sbin/nginx -g "daemon off;"' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'autostart=true' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'autorestart=true' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'stderr_logfile=/var/log/nginx/error.log' >> /etc/supervisor/conf.d/services.conf && \
-    echo 'stdout_logfile=/var/log/nginx/access.log' >> /etc/supervisor/conf.d/services.conf
+    echo 'stderr_logfile=/var/log/apache2/error.log' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'stdout_logfile=/var/log/apache2/access.log' >> /etc/supervisor/conf.d/services.conf
 
 # Expose port
 EXPOSE 8001
 
 # Create startup script
-RUN echo '#!/bin/sh\nset -e\necho "Initializing databases..."\nphp /app/database/init-db.php\necho "Running Laravel migrations..."\ncd /app && php artisan migrate --force 2>&1 || true\necho "Starting services..."\n/usr/bin/supervisord -c /etc/supervisor/supervisord.conf' > /app/entrypoint.sh && \
+RUN echo '#!/bin/sh\nset -e\necho "Regenerating composer autoload..."\ncd /app && composer dump-autoload\necho "Initializing databases..."\nphp /app/database/init-db.php\necho "Running Laravel migrations..."\ncd /app && php artisan migrate --force 2>&1 || true\necho "Starting services..."\n/usr/bin/supervisord -c /etc/supervisor/supervisord.conf' > /app/entrypoint.sh && \
     chmod +x /app/entrypoint.sh
 
 ENTRYPOINT ["/app/entrypoint.sh"]
+

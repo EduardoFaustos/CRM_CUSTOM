@@ -1,5 +1,5 @@
 // PHP Test Example
-&lt;?php
+<?php
 
 namespace Tests\Feature;
 
