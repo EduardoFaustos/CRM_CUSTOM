@@ -4,6 +4,33 @@ Referencia completa de todos los endpoints REST de la API del Sistema CRM.
 
 ---
 
+## 📋 Servicios Disponibles
+
+| Servicio | Puerto | Framework | Descripción |
+|----------|--------|-----------|-------------|
+| Autenticación | 5005 | .NET 8 | Autenticación y autorización con JWT |
+| Órdenes/Clientes | 8001 | PHP 8.3 + Laravel 11 (Apache) | Gestión de clientes y pedidos |
+| Frontend | 3000 | Angular 17 | Interfaz de usuario web |
+
+---
+
+## 🔐 Configuración de CORS
+
+### ⚠️ Cambios Recientes
+
+A partir de la versión actual, los headers CORS para el servicio de órdenes/clientes (puerto 8001) se manejan **exclusivamente a través del middleware de Laravel**, no en la configuración de Apache.
+
+**Archivo de configuración:** `backend-orders/app/Http/Middleware/CorsMiddleware.php`
+
+- **Origen permitido:** `http://localhost:3000`
+- **Métodos:** GET, POST, PUT, DELETE, PATCH, OPTIONS
+- **Headers:** Content-Type, Authorization, X-Requested-With
+- **Credenciales:** Habilitadas
+
+**Importante:** Asegúrese de que Apache NO esté configurado con headers CORS adicionales para evitar duplicados.
+
+---
+
 ## 🔐 Autenticación
 
 ### Tokens JWT
@@ -175,7 +202,7 @@ GET /api/auth/health
 
 ---
 
-## 👥 Endpoints de Clientes (Base: `http://localhost:5001`)
+## 👥 Endpoints de Clientes (Base: `http://localhost:8001`)
 
 ### Obtener Todos los Clientes
 
@@ -369,7 +396,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 📦 Endpoints de Pedidos (Base: `http://localhost:5001`)
+## 📦 Endpoints de Pedidos (Base: `http://localhost:8001`)
 
 ### Obtener Todos los Pedidos
 
@@ -589,7 +616,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 📊 Endpoints de Reportes (Base: `http://localhost:5001`)
+## 📊 Endpoints de Reportes (Base: `http://localhost:8001`)
 
 ### Resumen de Estadísticas
 
@@ -691,7 +718,7 @@ Authorization: Bearer <token>
 
 ---
 
-## 🛒 Endpoints de Inventario (Base: `http://localhost:5001`)
+## 🛒 Endpoints de Inventario (Base: `http://localhost:8001`)
 
 ### Obtener Estado del Inventario
 
@@ -795,11 +822,11 @@ curl -X POST http://localhost:5005/api/auth/login \
   -d '{"email":"user@example.com","password":"PassWord123!"}'
 
 # Obtener clientes (con token)
-curl -X GET http://localhost:5001/api/customers \
+curl -X GET http://localhost:8001/api/customers \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
 # Crear cliente
-curl -X POST http://localhost:5001/api/customers \
+curl -X POST http://localhost:8001/api/customers \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_JWT_TOKEN" \
   -d '{"name":"Test Co","email":"test@example.com"}'

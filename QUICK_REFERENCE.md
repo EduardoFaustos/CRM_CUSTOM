@@ -167,7 +167,7 @@ docker exec -it crm-orders /bin/bash
 
 ## 🔗 Puntos Finales de API
 
-### Servicio Autenticación (Puerto 5005/5001)
+### Servicio Autenticación (Puerto 5005)
 
 ```
 POST   /api/auth/register

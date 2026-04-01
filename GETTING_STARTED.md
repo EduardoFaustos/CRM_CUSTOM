@@ -13,7 +13,7 @@ Antes de comenzar, verifica que tengas instalado lo siguiente:
 - [ ] Docker Compose instalado (incluido con Docker Desktop)
 - [ ] 4 GB de RAM disponibles
 - [ ] 5 GB de espacio en disco disponible
-- [ ] Puertos 4200, 5005, 5001, 1433 disponibles
+- [ ] Puertos 3000, 5005, 8001, 1433 disponibles
 
 ### Opción B: Configuración Manual (Más Control)
 - [ ] Node.js 18+ instalado
@@ -54,18 +54,18 @@ docker-compose up -d
 docker-compose ps
 
 # Deberías ver 4 contenedores corriendo:
-# - crm-frontend (Puerto 4200)
-# - crm-auth (Puerto 5005-5001)
-# - crm-orders (Puerto 5001)
+# - crm-frontend (Puerto 3000)
+# - crm-auth (Puerto 5005)
+# - crm-orders (Puerto 8001 - Apache/PHP)
 # - crm-db (SQL Server, Puerto 1433)
 ```
 
 ### Paso 4: Acceder a la Aplicación
 
 Abre tu navegador y visita:
-- **Frontend:** http://localhost:4200
+- **Frontend:** http://localhost:3000
 - **Swagger (API Auth):** http://localhost:5005/swagger
-- **Orders API:** http://localhost:5001
+- **Orders API:** http://localhost:8001/api
 
 ### Paso 5: Primer Inicio de Sesión
 

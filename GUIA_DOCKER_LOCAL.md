@@ -11,7 +11,7 @@
 - Docker Desktop instalado
 - 4-6 GB de RAM disponibles
 - 10 GB de espacio en disco
-- Puertos libres: 3000, 5005, 5001, 8001, 1433
+- Puertos libres: 3000, 5005, 8001, 1433
 
 ---
 
@@ -96,8 +96,8 @@ docker-compose ps
 # Deberías ver algo como:
 # NAME                COMMAND              STATUS          PORTS
 # sqlserver           mssql-server        Up 2 minutes     0.0.0.0:1433->1433/tcp
-# auth-service        dotnet run          Up 1 minute      0.0.0.0:5005->5005/tcp, 0.0.0.0:5001->5001/tcp
-# orders-service      php artisan serve   Up 1 minute      0.0.0.0:8001->8001/tcp
+# auth-service        dotnet run          Up 1 minute      0.0.0.0:5005->5005/tcp
+# orders-service      apache2 -D FOREGROUND Up 1 minute     0.0.0.0:8001->8001/tcp
 # frontend            npm start           Up 1 minute      0.0.0.0:3000->3000/tcp
 ```
 
@@ -388,8 +388,7 @@ Ejecuta esta lista para verificar que todo funciona:
 |-----------|--------|-----|---------|-----------|
 | Frontend (Angular) | 3000 | http://localhost:3000 | admin@example.com | password123 |
 | Auth API | 5005 | http://localhost:5005/api | - | - |
-| Orders API | 8001 | http://localhost:8001/api | - | - |
-| HTTPS (Auth) | 5001 | https://localhost:5001/api | - | - |
+| Orders API (Apache) | 8001 | http://localhost:8001/api | - | - |
 | SQL Server | 1433 | localhost,1433 | sa | YourPassword123! |
 
 ---

@@ -13,19 +13,23 @@ Problemas comunes y soluciones para el Sistema CRM.
 # Verificar si los servicios del backend están ejecutándose
 docker ps  # si usa Docker
 ps aux | grep dotnet  # servicio .NET
-ps aux | grep php      # servicio PHP
+ps aux | grep apache2 # servicio Apache (órdenes)
 
-# Verificar disponibilidad de puerto
-netstat -ano | findstr "5005"  # Windows
-lsof -i :5005  # Mac/Linux
+# Verificar disponibilidad de puertos
+lsof -i :5005   # Auth service (.NET)
+lsof -i :8001   # Orders service (Apache/PHP)
+lsof -i :3000   # Frontend
 
 # Verificar variables de entorno
 cat frontend/src/environments/environment.ts
 
-# Reiniciar frontend
-cd frontend
-npm start
+# Reiniciar servicios si es necesario
+docker compose down
+docker compose up -d
 ```
+
+**Nota sobre CORS:**
+Los headers CORS ahora se manejan a través del middleware de Laravel (`app/Http/Middleware/CorsMiddleware.php`), no en la configuración de Apache. Los headers de CORS se configuran únicamente en el middleware para evitar duplicados.
 
 ### 2. Problemas de Token de Autenticación
 
@@ -93,10 +97,13 @@ npm install ng2-charts chart.js
 ```bash
 # Verificar SQL Server está ejecutándose
 # Windows: Abrir SQL Server Configuration Manager
-# Docker: docker ps | grep mssql
+# Docker: docker ps | grep sqlserver
 
 # Verificar cadena de conexión
 cat backend-auth/CRMAuth/appsettings.json
+
+# Ver logs del contenedor
+docker compose logs sqlserver
 
 # Probar conexión
 sqlcmd -S localhost -U sa -P YourPassword123! -Q "SELECT 1"
