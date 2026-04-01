@@ -1,0 +1,7 @@
+.env.local
+.env.*.local
+vendor/
+node_modules/
+storage/
+bootstrap/cache/
+.DS_Store

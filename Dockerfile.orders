@@ -1,0 +1,107 @@
+FROM php:8.3-fpm
+
+WORKDIR /app
+
+# Install system dependencies, build tools and Nginx
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libssl-dev \
+    zip \
+    unzip \
+    gnupg \
+    apt-transport-https \
+    pkg-config \
+    build-essential \
+    autoconf \
+    automake \
+    nginx \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Microsoft ODBC Driver for SQL Server
+RUN curl -sL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /usr/share/keyrings/microsoft-prod.gpg > /dev/null && \
+    chmod 644 /usr/share/keyrings/microsoft-prod.gpg && \
+    echo 'deb [arch=amd64,arm64,i386 signed-by=/usr/share/keyrings/microsoft-prod.gpg] https://packages.microsoft.com/debian/11/prod bullseye main' > /etc/apt/sources.list.d/mssql-release.list && \
+    apt-get update && \
+    ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions including SQL Server support
+RUN pecl install sqlsrv pdo_sqlsrv && \
+    docker-php-ext-enable sqlsrv pdo_sqlsrv && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Copy composer files
+COPY backend-orders/composer.json backend-orders/composer.lock* ./
+
+# Install dependencies
+RUN composer install --no-dev --no-interaction --no-scripts
+
+# Copy application
+COPY backend-orders/ .
+
+# Ensure storage and bootstrap directories exist with write permissions
+RUN mkdir -p storage/{logs,app,framework/{cache/data,views,sessions}} bootstrap/cache && \
+    chmod -R 777 storage bootstrap/cache && \
+    chown -R www-data:www-data storage bootstrap/cache || true
+
+# Run composer scripts now that code is available
+RUN composer run-script post-autoload-dump || true
+
+# Create Nginx configuration
+RUN echo 'server {\
+    listen 8001;\
+    server_name _;\
+    root /app/public;\
+    index index.php index.html;\
+    client_max_body_size 100M;\
+    location / {\
+        try_files $uri $uri/ /index.php?$query_string;\
+    }\
+    location ~ \\.php$ {\
+        fastcgi_pass 127.0.0.1:9000;\
+        fastcgi_index index.php;\
+        include fastcgi_params;\
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;\
+    }\
+}' > /etc/nginx/sites-available/default && \
+    rm -f /etc/nginx/sites-enabled/default && \
+    ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default && \
+    mkdir -p /run/nginx
+
+# Create supervisor configuration for both PHP-FPM and Nginx
+RUN mkdir -p /var/log/supervisor && \
+    echo '[supervisord]' > /etc/supervisor/conf.d/services.conf && \
+    echo 'nodaemon=true' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'logfile=/var/log/supervisor/supervisord.log' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'pidfile=/var/run/supervisord.pid' >> /etc/supervisor/conf.d/services.conf && \
+    echo '' >> /etc/supervisor/conf.d/services.conf && \
+    echo '[program:php-fpm]' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'command=/usr/local/sbin/php-fpm -F' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'autostart=true' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'autorestart=true' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'stderr_logfile=/var/log/php-fpm.err.log' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'stdout_logfile=/var/log/php-fpm.out.log' >> /etc/supervisor/conf.d/services.conf && \
+    echo '' >> /etc/supervisor/conf.d/services.conf && \
+    echo '[program:nginx]' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'command=/usr/sbin/nginx -g "daemon off;"' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'autostart=true' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'autorestart=true' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'stderr_logfile=/var/log/nginx/error.log' >> /etc/supervisor/conf.d/services.conf && \
+    echo 'stdout_logfile=/var/log/nginx/access.log' >> /etc/supervisor/conf.d/services.conf
+
+# Expose port
+EXPOSE 8001
+
+# Create startup script
+RUN echo '#!/bin/sh\nset -e\necho "Initializing databases..."\nphp /app/database/init-db.php\necho "Running Laravel migrations..."\ncd /app && php artisan migrate --force 2>&1 || true\necho "Starting services..."\n/usr/bin/supervisord -c /etc/supervisor/supervisord.conf' > /app/entrypoint.sh && \
+    chmod +x /app/entrypoint.sh
+
+ENTRYPOINT ["/app/entrypoint.sh"]

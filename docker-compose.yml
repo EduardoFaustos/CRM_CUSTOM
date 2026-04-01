@@ -1,0 +1,81 @@
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: 'Y'
+      SA_PASSWORD: 'YourPassword123!'
+      MSSQL_PID: 'Express'
+      MSSQL_MEMORY_LIMIT_MB: 1024
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - crm-network
+
+  # .NET Authentication Service
+  auth-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.auth
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:5000;http://+:5001
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=CRMAuthDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;
+      - Jwt__Secret=your-super-secret-key-min-32-characters-long-string-here
+      - Jwt__Issuer=CRMSystem
+      - Jwt__Audience=CRMSystemUsers
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - sqlserver
+    networks:
+      - crm-network
+
+  # PHP Orders Service
+  orders-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.orders
+    environment:
+      - APP_NAME=CRM Orders Service
+      - APP_DEBUG=true
+      - APP_URL=http://localhost:8001
+      - DB_CONNECTION=sqlsrv
+      - DB_HOST=sqlserver
+      - DB_PORT=1433
+      - DB_DATABASE=CRMOrdersDb
+      - DB_USERNAME=sa
+      - DB_PASSWORD=YourPassword123!
+    ports:
+      - "8001:8001"
+    depends_on:
+      - sqlserver
+    networks:
+      - crm-network
+
+  # Angular Frontend
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - auth-service
+      - orders-service
+    networks:
+      - crm-network
+    environment:
+      - API_URL=http://localhost:5000/api
+      - AUTH_API_URL=http://localhost:5000/api
+      - ORDERS_API_URL=http://localhost:8001/api
+
+volumes:
+  sqlserver_data:
+
+networks:
+  crm-network:
+    driver: bridge

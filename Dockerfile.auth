@@ -1,0 +1,27 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
+
+WORKDIR /src
+
+COPY ["backend-auth/CRMAuth/CRMAuth.csproj", "CRMAuth/"]
+
+RUN dotnet restore "CRMAuth/CRMAuth.csproj"
+
+COPY backend-auth/CRMAuth/ CRMAuth/
+
+WORKDIR "/src/CRMAuth"
+
+RUN dotnet build "CRMAuth.csproj" -c Release -o /app/build
+
+FROM build as publish
+
+RUN dotnet publish "CRMAuth.csproj" -c Release -o /app/publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0
+
+WORKDIR /app
+
+COPY --from=publish /app/publish .
+
+EXPOSE 5000 5001
+
+ENTRYPOINT ["dotnet", "CRMAuth.dll"]
