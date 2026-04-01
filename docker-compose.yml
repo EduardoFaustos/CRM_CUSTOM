@@ -21,13 +21,13 @@ services:
       dockerfile: Dockerfile.auth
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:5005;http://+:5001
+      - ASPNETCORE_URLS=http://+:5000;http://+:5001
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=CRMAuthDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;
       - Jwt__Secret=your-super-secret-key-min-32-characters-long-string-here
       - Jwt__Issuer=CRMSystem
       - Jwt__Audience=CRMSystemUsers
     ports:
-      - "5005:5005"
+      - "5005:5000"
       - "5001:5001"
     depends_on:
       - sqlserver
