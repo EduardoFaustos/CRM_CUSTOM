@@ -4,54 +4,6 @@ import { Component } from '@angular/core';
   selector: 'app-footer',
   standalone: true,
   template: `
-    <footer class="bg-white border-t border-gray-200 mt-auto">
-      <div class="px-8 py-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-          <!-- Branding -->
-          <div>
-            <div class="flex items-center space-x-2 mb-3">
-              <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-                <span class="text-white font-bold text-sm">CRM</span>
-              </div>
-              <h3 class="text-lg font-bold text-gray-900">CRM System</h3>
-            </div>
-            <p class="text-sm text-gray-600">Sistema integral de gestión de clientes y pedidos</p>
-          </div>
-
-          <!-- Producto -->
-          <div>
-            <h4 class="text-sm font-bold text-gray-900 mb-4">Producto</h4>
-            <ul class="space-y-2 text-sm">
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Características</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Precios</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Seguridad</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Roadmap</a></li>
-            </ul>
-          </div>
-
-          <!-- Recursos -->
-          <div>
-            <h4 class="text-sm font-bold text-gray-900 mb-4">Recursos</h4>
-            <ul class="space-y-2 text-sm">
-              <li><a href="http://localhost:8001/api/documentation" target="_blank" class="text-gray-600 hover:text-blue-600 transition">Documentación API</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Guías de Uso</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">FAQ</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Soporte</a></li>
-            </ul>
-          </div>
-
-          <!-- Legal -->
-          <div>
-            <h4 class="text-sm font-bold text-gray-900 mb-4">Legal</h4>
-            <ul class="space-y-2 text-sm">
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Términos de Servicio</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Política de Privacidad</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Cookies</a></li>
-              <li><a href="#" class="text-gray-600 hover:text-blue-600 transition">Contacto</a></li>
-            </ul>
-          </div>
-        </div>
-
         <!-- Divider -->
         <div class="border-t border-gray-200 pt-6">
           <div class="flex flex-col md:flex-row justify-between items-center">
