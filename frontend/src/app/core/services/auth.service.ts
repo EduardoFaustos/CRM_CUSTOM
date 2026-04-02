@@ -64,16 +64,24 @@ export class AuthService {
   }
 
   logout(): void {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
     this.currentUserSubject.next(null);
   }
 
   isAuthenticated(): boolean {
-    return !!localStorage.getItem('token');
+    if (typeof localStorage !== 'undefined') {
+      return !!localStorage.getItem('token');
+    }
+    return false;
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (typeof localStorage !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 }

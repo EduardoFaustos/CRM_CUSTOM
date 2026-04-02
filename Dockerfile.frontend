@@ -22,4 +22,9 @@ COPY --from=builder /app/dist/crm-frontend ./dist
 
 EXPOSE 3000
 
-CMD ["http-server", "dist", "-p", "3000", "--cors"]
+# Create a simple server script that rewrites all non-file routes to index.html
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'exec http-server dist -p 3000 --cors --fallback index.html' >> /app/start.sh && \
+    chmod +x /app/start.sh
+
+CMD ["/app/start.sh"]
