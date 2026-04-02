@@ -10,8 +10,12 @@ Route::get('/api', function () {
     return redirect('/api/documentation');
 });
 
-// Ruta temporal de documentación
+// Ruta de documentación Swagger
 Route::get('/api/documentation', function () {
     return view('api-docs');
 })->name('api.docs');
 
+// Servir el archivo JSON de OpenAPI
+Route::get('/api/swagger-docs.json', function () {
+    return response()->file(storage_path('api-docs/api-docs.json'));
+});

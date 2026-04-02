@@ -20,7 +20,7 @@ class OrderController extends Controller
         }
 
         if ($request->has('customer_id')) {
-            $query->where('customer_id', $request->customer_id);
+            $query->where('cedula', $request->customer_id);
         }
 
         if ($request->has('start_date')) {
@@ -40,7 +40,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'required|exists:customers,cedula',
             'items' => 'required|array|min:1',
             'items.*.product_name' => 'required|string',
             'items.*.quantity' => 'required|integer|min:1',
@@ -53,7 +53,7 @@ class OrderController extends Controller
         }
 
         $order = Order::create([
-            'customer_id' => $validated['customer_id'],
+            'cedula' => $validated['customer_id'],
             'order_number' => 'ORD-' . time(),
             'status' => 'pending',
             'total_amount' => $totalAmount

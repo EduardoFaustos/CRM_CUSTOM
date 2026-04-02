@@ -173,11 +173,12 @@ export class CustomerFormComponent implements OnInit {
       }
     });
 
-    this.route.params.subscribe(params => {
-      if (params['cedula']) {
+    this.route.paramMap.subscribe(params => {
+      const cedula = params.get('cedula');
+      if (cedula) {
         this.isEditMode = true;
-        this.customerId = params['cedula'];
-        this.loadCustomer(params['cedula']);
+        this.customerId = cedula;
+        this.loadCustomer(cedula);
         // Deshabilitar cédula en modo edición
         this.form.get('cedula')?.disable();
       }
@@ -188,7 +189,21 @@ export class CustomerFormComponent implements OnInit {
     this.isLoading = true;
     this.customerService.getCustomerById(id).subscribe(
       (customer) => {
-        this.form.patchValue(customer);
+        // Primero habilitar cedula para establecer el valor
+        this.form.get('cedula')?.enable();
+        this.form.patchValue({
+          cedula: customer.cedula,
+          tipo_documento: customer.tipo_documento,
+          name: customer.name,
+          email: customer.email,
+          phone: customer.phone,
+          address: customer.address,
+          city: customer.city,
+          state: customer.state,
+          zip_code: customer.zip_code
+        });
+        // Luego deshabilitar cedula nuevamente
+        this.form.get('cedula')?.disable();
         this.isLoading = false;
       },
       () => {

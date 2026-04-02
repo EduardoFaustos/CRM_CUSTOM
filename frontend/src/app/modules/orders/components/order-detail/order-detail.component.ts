@@ -3,14 +3,16 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { OrderService, Order } from '@core/services/order.service';
 import { LoadingComponent } from '@shared/components/loading/loading.component';
+import { AlertComponent } from '@shared/components/alert/alert.component';
 
 @Component({
   selector: 'app-order-detail',
   standalone: true,
-  imports: [CommonModule, RouterModule, LoadingComponent],
+  imports: [CommonModule, RouterModule, LoadingComponent, AlertComponent],
   template: `
     <div class="max-w-4xl mx-auto py-10 sm:px-6 lg:px-8">
       <app-loading [isLoading]="isLoading"></app-loading>
+      <app-alert [alert]="alert"></app-alert>
       
       <div *ngIf="!isLoading && order" class="bg-white rounded-lg shadow overflow-hidden">
         <div class="px-4 py-5 sm:p-6">
@@ -19,6 +21,34 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
             <span [ngClass]="getStatusClass(order.status)" class="px-3 py-1 rounded-md text-white font-medium">
               {{ order.status }}
             </span>
+          </div>
+
+          <!-- Estado Actions -->
+          <div class="mb-6 p-4 bg-gray-50 rounded-md">
+            <p class="text-sm font-medium text-gray-700 mb-3">Cambiar Estado:</p>
+            <div class="flex gap-2">
+              <button 
+                *ngIf="order.status !== 'completed'"
+                (click)="updateStatus('completed')"
+                [disabled]="statusUpdating"
+                class="bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white px-3 py-1 rounded-md text-sm">
+                Marcar Completado
+              </button>
+              <button 
+                *ngIf="order.status !== 'pending'"
+                (click)="updateStatus('pending')"
+                [disabled]="statusUpdating"
+                class="bg-yellow-600 hover:bg-yellow-700 disabled:bg-gray-400 text-white px-3 py-1 rounded-md text-sm">
+                Marcar Pendiente
+              </button>
+              <button 
+                *ngIf="order.status !== 'cancelled'"
+                (click)="updateStatus('cancelled')"
+                [disabled]="statusUpdating"
+                class="bg-red-600 hover:bg-red-700 disabled:bg-gray-400 text-white px-3 py-1 rounded-md text-sm">
+                Marcar Cancelado
+              </button>
+            </div>
           </div>
 
           <div class="grid grid-cols-2 gap-6 mb-8">
@@ -71,6 +101,8 @@ import { LoadingComponent } from '@shared/components/loading/loading.component';
 export class OrderDetailComponent implements OnInit {
   order: Order | null = null;
   isLoading = false;
+  statusUpdating = false;
+  alert: any = null;
 
   constructor(
     private orderService: OrderService,
@@ -93,6 +125,24 @@ export class OrderDetailComponent implements OnInit {
       },
       () => {
         this.isLoading = false;
+        this.alert = { type: 'error', message: 'Error al cargar el pedido' };
+      }
+    );
+  }
+
+  updateStatus(newStatus: 'pending' | 'completed' | 'cancelled') {
+    if (!this.order) return;
+    
+    this.statusUpdating = true;
+    this.orderService.updateOrderStatus(this.order.id, newStatus).subscribe(
+      (updatedOrder) => {
+        this.order = updatedOrder;
+        this.statusUpdating = false;
+        this.alert = { type: 'success', message: 'Estado actualizado correctamente' };
+      },
+      () => {
+        this.statusUpdating = false;
+        this.alert = { type: 'error', message: 'Error al actualizar el estado' };
       }
     );
   }

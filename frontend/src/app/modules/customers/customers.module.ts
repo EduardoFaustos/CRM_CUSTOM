@@ -9,8 +9,8 @@ import { CustomerFormComponent } from './components/customer-form/customer-form.
 const routes: Routes = [
   { path: '', component: CustomersListComponent },
   { path: 'new', component: CustomerFormComponent },
-  { path: ':id', component: CustomerDetailComponent },
-  { path: ':id/edit', component: CustomerFormComponent },
+  { path: ':cedula', component: CustomerDetailComponent },
+  { path: ':cedula/edit', component: CustomerFormComponent },
 ];
 
 @NgModule({

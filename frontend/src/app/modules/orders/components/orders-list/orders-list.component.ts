@@ -80,7 +80,8 @@ export class OrdersListComponent implements OnInit {
 
   loadOrders() {
     this.isLoading = true;
-    this.orderService.getOrders().subscribe(
+    const filters = this.filterStatus ? { status: this.filterStatus } : undefined;
+    this.orderService.getOrders(filters).subscribe(
       (data) => {
         this.orders = data;
         this.isLoading = false;

@@ -132,7 +132,7 @@ class CustomerController extends Controller
         $validated = $request->validate([
             'tipo_documento' => 'sometimes|in:Cedula,Ruc,Pasaporte',
             'name' => 'sometimes|string|max:255',
-            'email' => 'sometimes|email|unique:customers,email,'.$customer->cedula,
+            'email' => 'sometimes|email|unique:customers,email,'.$customer->cedula.',cedula',
             'phone' => 'sometimes|string',
             'address' => 'sometimes|string',
             'city' => 'sometimes|string',

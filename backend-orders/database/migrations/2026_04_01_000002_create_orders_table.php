@@ -11,9 +11,10 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('cedula', 20);
-            $table->dateTime('order_date')->default(now());
+            $table->string('order_number', 50)->unique();
             $table->decimal('total_amount', 10, 2);
             $table->string('status', 50)->default('pending');
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
             
             $table->foreign('cedula')->references('cedula')->on('customers');
