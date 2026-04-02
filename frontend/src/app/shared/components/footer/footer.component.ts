@@ -4,6 +4,9 @@ import { Component } from '@angular/core';
   selector: 'app-footer',
   standalone: true,
   template: `
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+      <div class="px-8 py-6">
+
         <!-- Divider -->
         <div class="border-t border-gray-200 pt-6">
           <div class="flex flex-col md:flex-row justify-between items-center">
